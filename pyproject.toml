@@ -1,0 +1,35 @@
+[project]
+name = "rss_to_opensearch"
+version = "0.1.0"
+description = "A python module"
+readme = "README.md"
+authors = [
+  { name = "Nathan Nichols", email = "communications@resultsmotivated.com" },
+]
+
+[project.scripts]
+# Makes 'spam-cli' an executable on PATH
+rss_to_opensearch = "rss_to_opensearch.util:replace_me"
+
+[tool.poetry]
+version = "2.1.1"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+loguru = "^0.7.3"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8"
+black = "^24.4.2"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+src_paths = ["rss_to_opensearch",]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    "ignore:.*unclosed.*:ResourceWarning",
+]
