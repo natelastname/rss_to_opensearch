@@ -1,22 +1,25 @@
-[project]
+[tool.poetry]
 name = "rss_to_opensearch"
 version = "0.1.0"
-description = "A python module"
-readme = "README.md"
+description = "Send RSS feeds to an OpenSearch instance."
 authors = [
-  { name = "Nathan Nichols", email = "communications@resultsmotivated.com" },
+  "Nathan Nichols <communications@resultsmotivated.com>"
 ]
+readme = "README.md"
+packages = [{ include = "rss_to_opensearch", from = "src" }]
 
-[project.scripts]
-# Makes 'spam-cli' an executable on PATH
-rss_to_opensearch = "rss_to_opensearch.util:replace_me"
-
-[tool.poetry]
-version = "2.1.1"
+[tool.poetry.scripts]
+rss_to_opensearch = "rss_to_opensearch.util:main"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.12,<3.14"
 loguru = "^0.7.3"
+opensearch-py = "^3.0.0"
+curl-cffi = "^0.13.0"
+feedparser = "^6.0.11"
+tldextract = "^5.3.0"
+pydantic = "^2.11.7"
+pydantic-settings = "^2.10.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8"
