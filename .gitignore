@@ -55,3 +55,12 @@ dist
 
 .tox
 .env
+**/.terraform/*
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
