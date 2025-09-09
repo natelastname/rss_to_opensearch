@@ -20,19 +20,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Show GitHub ref info
+        run: |
+          echo "GITHUB_REF=$GITHUB_REF"
+          echo "GITHUB_REF_TYPE=$GITHUB_REF_TYPE"
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
 
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        aws-region: ${{ env.AWS_REGION }}
+
+      - name: Who am I in AWS?
+        run: aws sts get-caller-identity
+
+      - uses: actions/checkout@v4
       - name: Configure AWS credentials (OIDC)
         id: creds
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
       - name: Extract Docker metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
