@@ -15,7 +15,7 @@ variable "github_owner" {
 
 variable "github_repo" {
   type = string
-  default = "https://github.com/natelastname/rss_to_opensearch.git"
+  default = "rss_to_opensearch"
 }
 
 variable "allowed_branch" {
