@@ -1,4 +1,12 @@
-.git
+# Stuff not needed during runtime
+*.env
+deploy/
+infra/
+docker/
+.venv/
+.git/
+
+# Other
 __pycache__/
 *.pyc
 *.pyo
@@ -7,5 +15,3 @@ __pycache__/
 .pytest_cache/
 dist/
 build/
-.venv/
-.env
