@@ -1,13 +1,13 @@
-terraform {
-  required_providers {
-    aws = { source = "hashicorp/aws", version = "~> 5.0" }
-    tls = { source = "hashicorp/tls", version = "~> 4.0" }
-  }
-}
+# terraform {
+#   required_providers {
+#     aws = { source = "hashicorp/aws", version = "~> 5.0" }
+#     tls = { source = "hashicorp/tls", version = "~> 4.0" }
+#   }
+# }
 
-provider "aws" {
-  region = var.aws_region
-}
+# provider "aws" {
+#   region = var.aws_region
+# }
 
 data "aws_caller_identity" "current" {}
 
@@ -31,6 +31,28 @@ resource "aws_ecr_repository" "this" {
 
   tags = var.tags
 }
+
+
+resource "aws_ecr_lifecycle_policy" "keep_latest_5" {
+  repository = aws_ecr_repository.this.name
+  policy = jsonencode({
+    rules = [
+      {
+        rulePriority = 1
+        description  = "Keep last 4 untagged (so latest + 4 = 5)"
+        selection = {
+          tagStatus     = "untagged"
+          countType     = "imageCountMoreThan"
+          countNumber   = 4
+        }
+        action = { type = "expire" }
+      }
+    ]
+  })
+}
+
+
+
 
 # Policy to push/pull this repo
 data "aws_iam_policy_document" "ecr_push_pull" {

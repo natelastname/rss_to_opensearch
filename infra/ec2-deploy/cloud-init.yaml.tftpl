@@ -1,0 +1,43 @@
+#cloud-config
+package_update: true
+packages:
+  - docker.io
+  - docker-compose-plugin
+  - git
+
+write_files:
+  - path: /opt/${project}/docker-compose.yml
+    permissions: '0644'
+    owner: ubuntu:ubuntu
+    content: |
+${indent(6, compose_yaml)}
+  - path: /opt/${project}/.env
+    permissions: '0600'
+    owner: ubuntu:ubuntu
+    content: |
+${indent(6, env_file)}
+  - path: /etc/systemd/system/${project}.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=${project} docker compose stack
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      Environment=COMPOSE_PROJECT_NAME=${project}
+      WorkingDirectory=/opt/${project}
+      ExecStart=/usr/bin/docker compose pull
+      ExecStart=/usr/bin/docker compose up -d
+      ExecStop=/usr/bin/docker compose stop
+      TimeoutStartSec=0
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  - [ bash, -lc, 'usermod -aG docker ubuntu' ]
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, enable, --now, ${project}.service ]
