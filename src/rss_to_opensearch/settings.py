@@ -32,13 +32,14 @@ class Settings(BaseSettings):
     ##################################################################
     # Administration
     ##################################################################
-    opensearch_user: str = "admin"
-    opensearch_pass: str = "admin"
+
     opensearch_host: str = "127.0.0.1"
-    opensearch_port: str = "9200"
-    opensearch_use_ssl: bool = True
-    opensearch_http_auth: str = "false"
     opensearch_index_name: str = "rss_to_opensearch"
+    opensearch_pass: str = "admin"
+    opensearch_port: str = "9200"
+    opensearch_user: str = "admin"
+    opensearch_use_ssl: bool = True
+    rto_feeds_json_path: str = "/opt/rss_to_opensearch/feeds.json"
 
 
 settings = Settings()

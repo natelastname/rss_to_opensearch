@@ -145,9 +145,14 @@ def main():
     index = os_client.indices.get(index=index_name)
 
     ##################################################################
-    feeds_json = get_project_root() / "feeds.json"
+    feeds_json = os.ENVIRON.get('RTO_FEEDS_JSON_PATH')
+    feeds_json = Path(settings.feed_json)
+    if not feeds_json.is_file():
+        logger.error(f"Couldn't find file `{feeds_json}`.")
+
     with open(feeds_json, "r") as fp:
         feeds = json.loads(fp.read())
+
     ##################################################################
     for domain, item in enumerate_feeds(feeds):
         item_id = item['link']
