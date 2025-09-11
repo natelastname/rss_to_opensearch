@@ -2,8 +2,21 @@ terraform {
   required_providers {
     # “provider” is used in the sense of “hosting provider”
     # For example, we might require aws or azure
-    aws = { source = "hashicorp/aws", version = "~> 5.0" }
-    tls = { source = "hashicorp/tls", version = "~> 4.0" }
+    aws = {
+      source = "hashicorp/aws",
+      version = "~> 5.0"
+    }
+
+    tls = {
+      source = "hashicorp/tls",
+      version = "~> 4.0"
+    }
+
+    template = {
+      source  = "hashicorp/template"
+      version = "~> 2.2.0"
+    }
+
   }
 }
 
