@@ -2,6 +2,12 @@ variable "project" {
   type = string
 }
 
+variable "deploy_user"{
+  type = string
+  default = "nate"
+}
+
+
 variable "region" {
   type = string
   default = "us-east-1"

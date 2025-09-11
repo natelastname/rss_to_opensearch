@@ -1,26 +1,6 @@
-# terraform {
-#   required_version = ">= 1.5.0"
-#   # “provider” is used in the sense of “hosting provider”
-#   # For example, we might require aws or azure
-#   required_providers {
-#     aws = { source = "hashicorp/aws", version = "~> 5.0" }
-#     tls = { source = "hashicorp/tls", version = "~> 4.0" }
-#   }
-# }
-
-# provider "aws" {
-#   region = "us-east-1"
-#   assume_role {
-#     role_arn = "arn:aws:iam::071328093114:role/TerraformUser"
-#     session_name = "terraform-session"
-#   }
-# }
-
 locals {
   account_id = data.aws_caller_identity.current.account_id
 }
-
-
 
 # --- SSH key: generate or use existing ---
 resource "tls_private_key" "gen" {
@@ -69,22 +49,6 @@ resource "aws_security_group" "this" {
     cidr_blocks = [var.my_ip_cidr]
   }
 
-  # Open if your compose stack needs these; comment out if not needed.
-  # ingress {
-  #   description = "HTTP"
-  #   from_port   = 80
-  #   to_port     = 80
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-  # ingress {
-  #   description = "HTTPS"
-  #   from_port   = 443
-  #   to_port     = 443
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/0"]
-  # }
-
   egress {
     description = "All egress"
     from_port   = 0
@@ -92,19 +56,47 @@ resource "aws_security_group" "this" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Open if your compose stack needs these; comment out if not needed.
+
+  # ingress {
+  #   description = "HTTPS"
+  #   from_port   = 443
+  #   to_port     = 443
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
+  # ingress {
+  #   description = "HTTP"
+  #   from_port   = 80
+  #   to_port     = 80
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  # }
 }
 
-# --- Cloud-init (installs Docker + Compose, writes files, starts service) ---
+
+######################################################################
+
 locals {
-  compose_yaml = file(local.compose_file_path)
-  env_content  = var.env_file != "" ? file(var.env_file) : ""
-  userdata     = templatefile("${path.module}/cloud-init.yaml.tftpl", {
-    compose_yaml = local.compose_yaml
-    env_file     = local.env_content
-    project      = var.project
+  files = [
+    for fname in fileset("${path.module}/files", "*") : {
+      name    = fname
+      content = filebase64("${path.module}/files/${fname}")
+    }
+  ]
+  # Render cloud-init
+  userdata = templatefile("${path.module}/templates/cloud-init.yaml", {
+    project     = var.project
+    files       = local.files
+    ssh_pubkey  = aws_key_pair.this.public_key
+    deploy_user = var.deploy_user
   })
-
 }
+
+
+######################################################################
+
 
 resource "aws_instance" "this" {
   ami                    = data.aws_ami.ubuntu.id
@@ -122,6 +114,13 @@ resource "aws_instance" "this" {
     Name    = var.project
     Project = var.project
   }
+
+  # Force replace on user_data change
+  user_data_replace_on_change = true
+
+  # Optional zero-downtime pattern if you can run two at once:
+  lifecycle { create_before_destroy = true }
+
 }
 
 # Optional stable public IP
@@ -136,3 +135,4 @@ resource "aws_eip_association" "a" {
   instance_id   = aws_instance.this.id
   allocation_id = aws_eip.this[0].id
 }
+

@@ -1,0 +1,81 @@
+#cloud-config
+package_update: true
+
+apt:
+  preserve_sources_list: true
+  conf: |
+    Acquire::Retries "5";
+  sources:
+    ubuntu-universe:
+      source: "deb http://archive.ubuntu.com/ubuntu $RELEASE universe"
+    ubuntu-universe-updates:
+      source: "deb http://archive.ubuntu.com/ubuntu $RELEASE-updates universe"
+
+
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - awscli
+  - amazon-ecr-credential-helper
+
+groups:
+  - appgroup
+
+users:
+  - name: ${deploy_user}
+    gecos: "App Deployer"
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    groups: [adm, sudo, docker, appgroup]
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${ssh_pubkey}
+
+  - name: appuser
+    gecos: "Application Service User"
+    shell: /bin/bash
+    groups: [docker, appgroup]
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ${ssh_pubkey}
+
+write_files:
+%{ for file in files ~}
+  - path: /opt/${project}/${file.name}
+    permissions: '0644'
+    encoding: b64
+    content: ${file.content}
+%{ endfor }
+  - path: /etc/systemd/system/${project}.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=${project} docker compose stack
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=simple
+      User=appuser
+      Environment=COMPOSE_PROJECT_NAME=${project}
+      WorkingDirectory=/opt/${project}
+      ExecStart=/usr/bin/docker compose up
+      Restart=always
+      TimeoutStartSec=0
+
+      [Install]
+      WantedBy=multi-user.target
+
+runcmd:
+  # ensure project dir exists and is owned by appuser
+  - [ "bash", "-lc", "install -d -m 0755 -o appuser -g appgroup /opt/${project}" ]
+  - [ "chown", "-R", "appuser:appgroup", "/opt/${project}" ]
+  - [ "mkdir", "-p", "/home/appuser/.docker" ]
+  - [ "bash", "-c", "echo '{ \"credsStore\": \"ecr-login\" }' > /home/appuser/.docker/config.json" ]
+  # Chown entire home directory
+  - [ "chown", "-R", "appuser:appgroup", "/home/appuser/" ]
+  # bring docker up before your service
+  - [ "systemctl", "daemon-reload" ]
+  - [ "systemctl", "enable", "--now", "docker" ]
+  - [ "systemctl", "enable", "--now", "${project}.service" ]
