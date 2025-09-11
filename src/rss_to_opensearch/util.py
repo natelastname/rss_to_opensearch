@@ -145,7 +145,7 @@ def main():
     index = os_client.indices.get(index=index_name)
 
     ##################################################################
-    feeds_json = os.ENVIRON.get('RTO_FEEDS_JSON_PATH')
+    feeds_json = os.environ.get('RTO_FEEDS_JSON_PATH')
     feeds_json = Path(settings.feed_json)
     if not feeds_json.is_file():
         logger.error(f"Couldn't find file `{feeds_json}`.")
