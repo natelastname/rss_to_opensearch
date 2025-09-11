@@ -53,3 +53,6 @@ services:
     env_file:
       - .env
     command: poetry run rss_to_opensearch
+    volumes:
+      - /opt/rss_to_opensearch:/opt/rss_to_opensearch
+    restart: always

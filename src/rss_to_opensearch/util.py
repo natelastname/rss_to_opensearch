@@ -27,6 +27,42 @@ from opensearchpy import OpenSearch
 from rss_to_opensearch.settings import settings
 
 
+def _fmt_secs(seconds: float) -> str:
+    seconds = max(0, int(round(seconds)))
+    m, s = divmod(seconds, 60)
+    return f"{m:02d}:{s:02d}"
+
+def wait_with_progress(num_secs: float, interval: float = 30.0) -> None:
+    if num_secs < 0:
+        raise ValueError("num_secs must be >= 0")
+    start = time.monotonic()
+    end = start + num_secs
+    next_tick = start + interval
+    while True:
+        now = time.monotonic()
+        if now >= end:
+            break
+        # Sleep until the next interval or the end, whichever comes first
+        sleep_dur = min(next_tick, end) - now
+        if sleep_dur > 0:
+            time.sleep(sleep_dur)
+        now = time.monotonic()
+        # Print only on interval ticks that occurred before the end time
+        if now < end and now + 1e-9 >= next_tick:
+            elapsed = now - start
+            remaining = end - now
+            logger.info(f"Elapsed: {_fmt_secs(elapsed)} | Remaining: {_fmt_secs(remaining)}")
+            next_tick += interval
+    total = time.monotonic() - start
+    logger.info(f"Done. Elapsed: {_fmt_secs(total)} | Remaining: 00:00")
+
+
+
+
+
+
+
+
 def normalize_url(url):
     # strip obvious trackers; keep scheme+host+path
     u = urlparse(url)
@@ -107,9 +143,6 @@ def get_id(item):
 
 def main():
     logger.info(__name__)
-    logger.info(__name__)
-    logger.info(__name__)
-    logger.info(__name__)
     ##################################################################
     auth = (settings.opensearch_user, settings.opensearch_pass)
     index_name = settings.opensearch_index_name
@@ -154,9 +187,9 @@ def main():
         feeds = json.loads(fp.read())
 
     ##################################################################
+    num_added = 0
     for domain, item in enumerate_feeds(feeds):
         item_id = item['link']
-
         doc_exists = os_client.exists(index=index_name, id=item_id)
         if doc_exists:
             continue
@@ -174,3 +207,6 @@ def main():
             id=item_id,
             refresh=True
         )
+        num_added += 1
+    logger.success(f"Done (added {num_added} documents)")
+    wait_with_progress(60*15, 30)
