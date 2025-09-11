@@ -146,7 +146,7 @@ def main():
 
     ##################################################################
     feeds_json = os.environ.get('RTO_FEEDS_JSON_PATH')
-    feeds_json = Path(settings.feed_json)
+    feeds_json = Path(settings.feeds_json_path)
     if not feeds_json.is_file():
         logger.error(f"Couldn't find file `{feeds_json}`.")
 

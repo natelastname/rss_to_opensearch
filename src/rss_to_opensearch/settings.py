@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     opensearch_port: str = "9200"
     opensearch_user: str = "admin"
     opensearch_use_ssl: bool = True
-    rto_feeds_json_path: str = "/opt/rss_to_opensearch/feeds.json"
+    feeds_json_path: str = "/opt/rss_to_opensearch/feeds.json"
 
 
 settings = Settings()
