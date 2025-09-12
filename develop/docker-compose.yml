@@ -1,0 +1,46 @@
+services:
+  
+  opensearch:
+    image: opensearchproject/opensearch:2
+    container_name: opensearch
+    env_file:
+      - .env
+    environment:
+      - discovery.type=single-node
+      # Set the admin password on first boot (2.12+ requires this)
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASS}
+      # Tweak heap for your machine
+      # Set min and max JVM heap sizes to at least 50% of system RAM
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"   # OpenSearch REST API
+    healthcheck:
+      # Use -k because the demo cert is self-signed
+      test: ["CMD-SHELL", "curl -k -s https://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  dashboards:
+    image: opensearchproject/opensearch-dashboards:2
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      # Point Dashboards at the OpenSearch service over HTTPS
+      - OPENSEARCH_HOSTS=["https://opensearch:9200"]
+      # Use your admin creds (or a service account) to connect
+      - OPENSEARCH_USERNAME=${OPENSEARCH_USER}
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_PASS}
+      # Self-signed in demo → disable verification (dev only)
+      - OPENSEARCH_SSL_VERIFICATIONMODE=none
+      # Bind to all interfaces in the container
+      - SERVER_HOST=0.0.0.0
+    ports:
+      - "5601:5601"

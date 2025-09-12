@@ -1,0 +1,80 @@
+{
+  "https://www.theguardian.com/world/rss": {
+    "cache_stamp": false
+  },
+  "https://feeds.content.dowjones.io/public/rss/RSSWorldNews": {
+    "cache_stamp": false
+  },
+  "https://feeds.content.dowjones.io/public/rss/WSJcomUSBusiness": {
+    "cache_stamp": false
+  },
+  "https://feeds.content.dowjones.io/public/rss/RSSUSnews": {
+    "cache_stamp": false
+  },
+  "https://feeds.content.dowjones.io/public/rss/socialpoliticsfeed": {
+    "cache_stamp": false
+  },
+  "https://feeds.content.dowjones.io/public/rss/RSSWSJD": {
+    "cache_stamp": false
+  },
+  "http://rss.nytimes.com/services/xml/rss/nyt/World.xml": {
+    "cache_stamp": false
+  },
+  "http://feeds.washingtonpost.com/rss/world": {
+    "cache_stamp": false
+  },
+  "https://www.ft.com/?format=rss": {
+    "cache_stamp": false
+  },
+  "https://www.jpost.com/rss/rssfeedsfrontpage.aspx": {
+    "cache_stamp": false
+  },
+  "https://www.aljazeera.com/xml/rss/all.xml": {
+    "cache_stamp": false
+  },
+  "https://asia.nikkei.com/rss/feed/nar": {
+    "cache_stamp": false
+  },
+  "https://www.scmp.com/rss/feed/": {
+    "cache_stamp": false
+  },
+  "https://thediplomat.com/feed/": {
+    "cache_stamp": false
+  },
+  "https://www.middleeasteye.net/rss": {
+    "cache_stamp": false
+  },
+  "https://tass.com/rss/v2.xml": {
+    "cache_stamp": true
+  },
+  "https://www.themoscowtimes.com/rss/news": {
+    "cache_stamp": false
+  },
+  "https://www.thehindu.com/news/feeder/default.rss": {
+    "cache_stamp": false
+  },
+  "https://www.thehindu.com/business/feeder/default.rss": {
+    "cache_stamp": false
+  },
+  "https://www.batimes.com.ar/feed": {
+    "cache_stamp": false
+  },
+  "https://rss.dw.com/rdf/rss-en-all": {
+    "cache_stamp": false
+  },
+  "https://www.rt.com/rss/news/": {
+    "cache_stamp": false
+  },
+  "https://en.mercopress.com/rss": {
+    "cache_stamp": false
+  },
+  "https://www.straitstimes.com/news/world/rss.xml": {
+    "cache_stamp": false
+  },
+  "https://www.spiegel.de/international/index.rss": {
+    "cache_stamp": false
+  },
+  "https://english.kyodonews.net/list/feed/rss4kyodonews-fzone": {
+    "cache_stamp": false
+  }
+}
