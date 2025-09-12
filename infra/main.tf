@@ -37,7 +37,7 @@ module "ec2-deploy" {
   source = "./ec2-deploy"
   project = var.project
   region = var.aws_region
-  instance_type = "t3.micro"
+  instance_type = "t3.medium"
   volume_size_gb = 32
   my_ip_cidr = "0.0.0.0/0"
   attach_eip = false

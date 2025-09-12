@@ -20,7 +20,7 @@ services:
       - "9200:9200"   # OpenSearch REST API
     healthcheck:
       # Use -k because the demo cert is self-signed
-      test: ["CMD-SHELL", "curl -k -s https://localhost:9200 >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -ksSf -u '${OPENSEARCH_USER}:${OPENSEARCH_PASS}' -s https://localhost:9200 >/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 20

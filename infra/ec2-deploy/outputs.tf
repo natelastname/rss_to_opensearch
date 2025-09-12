@@ -12,7 +12,15 @@ locals {
 }
 
 output "ssh_command" {
+  description = "Connect over SSH."
   value = "ssh -i ${local.ssh_key} ${var.deploy_user}@${local.ssh_host}"
 }
+
+output "ssm_command" {
+  description = "Start an AWS SSM shell session to the instance."
+  value       = "aws ssm start-session --target ${aws_instance.this.id}"
+}
+
+
 output "service_name" { value = "${var.project}.service" }
 output "compose_dir"  { value = "/opt/${var.project}" }

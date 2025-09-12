@@ -119,7 +119,7 @@ resource "aws_instance" "this" {
   user_data_replace_on_change = true
 
   # Optional zero-downtime pattern if you can run two at once:
-  lifecycle { create_before_destroy = true }
+  #lifecycle { create_before_destroy = true }
 
 }
 
