@@ -121,22 +121,21 @@ def get_feed(url, feed_settings):
         logger.error(f"Error fetching {url}: {exc}")
         return
 
+    size_mb = f"{round(len(resp.content) / (1024 * 1024), 2)} MiB"
+    num_ents = len(parsed.entries)
+    logger.info(f"Retrieved {size_mb} in {round(resp.elapsed, 2)}s ({num_ents} entries)")
+
     domain = tldextract.extract(url).registered_domain
+
     for entry in parsed.entries:
         if link := entry.get("link"):
             entry['link'] = normalize_url(entry['link'])
         else:
             logger.warning(f'Skipping item from {domain} (no link)')
 
-        yield domain, entry
+        yield entry
 
 ######################################################################
-def enumerate_feeds(feeds):
-    counter = 0
-    for url, settings in feeds.items():
-        logger.info(f"{counter:4}: {url}")
-        yield from get_feed(url, settings)
-        counter += 1
 
 def get_id(item):
     normalize_url(item['link'])
@@ -187,30 +186,44 @@ def main():
         feeds = json.loads(fp.read())
 
     ##################################################################
-    num_added = 0
-    for domain, item in enumerate_feeds(feeds):
-        item_id = item['link']
-        doc_exists = os_client.exists(index=index_name, id=item_id)
-        if doc_exists:
-            continue
 
-        now = dt.datetime.now().isoformat(timespec='seconds')
-        data = {
-            "body": item,
-            "domain": domain,
-            "dtg": now
-        }
-        resp = os_client.index(
-            index=index_name,
-            body=data,
-            id=item_id,
-            refresh=True
-        )
-        if resp.get("result") == "created":
-            print(item_id)
+    counter = 0
+    for url, prefs in feeds.items():
+        logger.info(f"{counter:4}: {url}")
+        counter += 1
+        feed_domain = tldextract.extract(url).registered_domain
+        num_added_domain = 0
+        num_dupes_domain = 0
+        num_other_domain = 0
+        for item in get_feed(url, prefs):
+            item_id = item['link']
+            doc_exists = os_client.exists(index=index_name, id=item_id)
+            if doc_exists:
+                num_dupes_domain += 1
+                continue
 
-        num_added += 1
+            now = dt.datetime.now().isoformat(timespec='seconds')
+            data = {
+                "body": item,
+                "domain": feed_domain,
+                "dtg": now
+            }
+            resp = os_client.index(
+                index=index_name,
+                body=data,
+                id=item_id,
+                refresh=True
+            )
+            if resp.get("result") == "created":
+                num_added_domain += 1
+            else:
+                num_other_domain += 1
 
-    logger.success(f"Done (added {num_added} documents)")
+            # endfor
 
-    wait_with_progress(60*15, 30)
+
+        logger.info(f"Added: {num_added_domain}")
+        logger.info(f"Dupes: {num_dupes_domain}")
+        logger.info(f"Other: {num_other_domain}")
+
+    wait_with_progress(60*30, 30)

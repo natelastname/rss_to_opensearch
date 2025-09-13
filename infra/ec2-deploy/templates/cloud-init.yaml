@@ -60,6 +60,7 @@ write_files:
       User=appuser
       Environment=COMPOSE_PROJECT_NAME=${project}
       WorkingDirectory=/opt/${project}
+      ExecStartPre=/usr/bin/docker compose pull
       ExecStart=/usr/bin/docker compose up
       Restart=always
       TimeoutStartSec=0
