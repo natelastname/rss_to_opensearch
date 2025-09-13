@@ -200,13 +200,17 @@ def main():
             "domain": domain,
             "dtg": now
         }
-
         resp = os_client.index(
             index=index_name,
-            body=item,
+            body=data,
             id=item_id,
             refresh=True
         )
+        if resp.get("result") == "created":
+            print(item_id)
+
         num_added += 1
+
     logger.success(f"Done (added {num_added} documents)")
+
     wait_with_progress(60*15, 30)
