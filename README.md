@@ -10,9 +10,9 @@ A tool to transfer RSS feeds to OpenSearch.
 
 ## Installation
 
-Clone the repository and install dependencies:
+Clone the repository and install dependencies using Poetry:
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
 ## Usage
