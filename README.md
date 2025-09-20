@@ -63,14 +63,9 @@ Detailed documentation and deployment procedures are available in the `infra` su
 
 ## 📝 TODO
 
-- Remove hard-coded ECR image in `./infra/ec2-deploy/files/docker-compose.yml`
 - Implement additional data source support
 - Enhance error handling and logging mechanisms
 
-## 🤝 Contributing
-
-We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
-
 ## 📧 Contact
 
-For questions or support, please contact [yourname@domain.com](mailto:yourname@domain.com).
+For questions or support, please contact [communications@resultsmotivated.com](mailto:communications@resultsmotivated.com).
