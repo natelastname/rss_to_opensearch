@@ -24,7 +24,7 @@ python -m src.rss_to_opensearch
 
 ## Infrastructure
 
-Terraform and other infrastructure configuration is located in the `infra` directory.
+The deployment stack is built using Terraform for robust infrastructure-as-code implementations. This includes configurations for AWS services such as EC2, ECR, IAM, and more, ensuring a secure and scalable environment. Our CI/CD pipelines automate testing and deployments, reducing manual intervention and enhancing reliability. Detailed deployment procedures, including step-by-step instructions for scaling and troubleshooting, are available in the respective README files within the `infra` subdirectories (e.g., `ec2-deploy` and `cicd`).
 
 ## TODO
 - Remove hard coded ECR image in `./infra/ec2-deploy/files/docker-compose.yml`
