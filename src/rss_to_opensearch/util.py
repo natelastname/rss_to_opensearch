@@ -202,7 +202,11 @@ def main():
                 num_dupes_domain += 1
                 continue
 
-            now = dt.datetime.now().isoformat(timespec='seconds')
+            # Get current time in UTC with timezone awareness
+            utc_now = dt.datetime.now(dt.timezone.utc)
+            # ISO 8601 format, seconds resolution, includes timezone offset
+            now = utc_now.isoformat(timespec='seconds')
+
             data = {
                 "body": item,
                 "domain": feed_domain,
